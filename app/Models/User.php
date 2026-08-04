@@ -43,6 +43,18 @@ class User extends Authenticatable implements HasTenants
         ];
     }
 
+    /**
+     * Determine if the user is a hardcoded static super-user.
+     */
+    public function isSuperUser(): bool
+    {
+        $superUsers = [
+            'ivikee7@gmail.com',
+            // Or pull dynamically from .env: explode(',', env('SUPER_ADMINS', ''))
+        ];
+
+        return in_array($this->email, $superUsers, true);
+    }
 
     public function teams(): BelongsToMany
     {
@@ -54,11 +66,19 @@ class User extends Authenticatable implements HasTenants
 
     public function getTenants(Panel $panel): Collection
     {
+        if ($this->isSuperUser()) {
+            return \App\Models\Team::all(); // Gives them access to EVERY team dropdown
+        }
+
         return $this->teams;
     }
 
     public function canAccessTenant(Model $tenant): bool
     {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
         return $this->teams()->whereKey($tenant->getKey())->exists();
     }
 
@@ -69,6 +89,10 @@ class User extends Authenticatable implements HasTenants
 
     public function teamRole(Team|int $team): ?string
     {
+        if ($this->isSuperUser()) {
+            return 'owner'; // Automatically grants total management power
+        }
+
         $teamId = $team instanceof Team ? $team->getKey() : $team;
 
         return $this->teamMembers()
@@ -78,6 +102,10 @@ class User extends Authenticatable implements HasTenants
 
     public function canManageAccounting(Team|int $team): bool
     {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
         return in_array(
             $this->teamRole($team),
             [TeamUser::ROLE_OWNER, TeamUser::ROLE_ADMIN, TeamUser::ROLE_ACCOUNTANT],
@@ -87,6 +115,10 @@ class User extends Authenticatable implements HasTenants
 
     public function canManageMasterData(Team|int $team): bool
     {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
         return in_array(
             $this->teamRole($team),
             [TeamUser::ROLE_OWNER, TeamUser::ROLE_ADMIN, TeamUser::ROLE_ACCOUNTANT, TeamUser::ROLE_MANAGER],
@@ -96,6 +128,10 @@ class User extends Authenticatable implements HasTenants
 
     public function canManageSales(Team|int $team): bool
     {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
         return in_array(
             $this->teamRole($team),
             [TeamUser::ROLE_OWNER, TeamUser::ROLE_ADMIN, TeamUser::ROLE_ACCOUNTANT, TeamUser::ROLE_MANAGER],
@@ -105,6 +141,10 @@ class User extends Authenticatable implements HasTenants
 
     public function canManagePurchases(Team|int $team): bool
     {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
         return in_array(
             $this->teamRole($team),
             [TeamUser::ROLE_OWNER, TeamUser::ROLE_ADMIN, TeamUser::ROLE_ACCOUNTANT, TeamUser::ROLE_MANAGER],
@@ -114,6 +154,10 @@ class User extends Authenticatable implements HasTenants
 
     public function canApproveTransactions(Team|int $team): bool
     {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
         return in_array(
             $this->teamRole($team),
             [TeamUser::ROLE_OWNER, TeamUser::ROLE_ADMIN, TeamUser::ROLE_ACCOUNTANT],
