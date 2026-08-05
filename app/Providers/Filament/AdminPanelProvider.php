@@ -8,7 +8,9 @@ use App\Filament\Pages\Reports\ProfitAndLossReport;
 use App\Filament\Pages\Reports\TrialBalanceReport;
 use App\Filament\Pages\Tenancy\EditTeamProfile;
 use App\Filament\Pages\Tenancy\RegisterTeam;
+use App\Filament\Pages\User\EditUser;
 use App\Models\Team;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -70,6 +72,20 @@ class AdminPanelProvider extends PanelProvider
             ->tenant(Team::class)
             ->tenantRegistration(RegisterTeam::class)
             ->tenantProfile(EditTeamProfile::class)
+            ->tenantMenuItems([
+                [
+                    Action::make('edit-user')
+                        ->url(fn (): string => EditUser::getUrl())
+                        ->icon('heroicon-m-user-circle'),
+                ],
+                [
+                    Action::make('documentation')
+                        ->url('https://filamentphp.com/docs/5.x')
+                        ->openUrlInNewTab()
+                        ->icon('heroicon-m-book-open')
+                        ->visible(fn () => auth()->user()?->isSuperUser()), // Checks if user is superuser,
+                ],
+            ])
             ->spa();
     }
 }
