@@ -21,6 +21,8 @@ class EditTeamProfile extends EditTenantProfile
         return 'Workspace Profile';
     }
 
+    protected static ?string $slug = 'workspace-profile';
+
     public function form(Schema $schema): Schema
     {
         // 1. Get the current authenticated user's role in this active team

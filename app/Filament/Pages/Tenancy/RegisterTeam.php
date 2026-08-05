@@ -16,6 +16,8 @@ class RegisterTeam extends RegisterTenant
         return 'Create Workspace';
     }
 
+    protected static ?string $slug = 'create-workspace';
+
     public function form(Schema $schema): Schema
     {
         return $schema->components([

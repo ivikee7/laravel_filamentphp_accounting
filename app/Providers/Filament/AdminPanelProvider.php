@@ -69,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->tenant(Team::class)
             ->tenantRegistration(RegisterTeam::class)
-            ->tenantProfile(EditTeamProfile::class);
+            ->tenantProfile(EditTeamProfile::class)
+            ->spa();
     }
 }
