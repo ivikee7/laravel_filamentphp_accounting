@@ -5,7 +5,10 @@ namespace App\Filament\Resources\Users;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
+use App\Filament\Resources\Users\Pages\ViewUser;
+use App\Filament\Resources\Users\RelationManagers\TeamsRelationManager;
 use App\Filament\Resources\Users\Schemas\UserForm;
+use App\Filament\Resources\Users\Schemas\UserInfolist;
 use App\Filament\Resources\Users\Tables\UsersTable;
 use App\Models\User;
 use BackedEnum;
@@ -21,14 +24,19 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static string | UnitEnum | null $navigationGroup = "Administration";
     protected static ?string $tenantOwnershipRelationshipName = 'teams';
     protected static bool $isScopedToTenant = false;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Administration';
 
     public static function form(Schema $schema): Schema
     {
         return UserForm::configure($schema);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return UserInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
@@ -39,7 +47,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            TeamsRelationManager::class,
         ];
     }
 
@@ -48,6 +56,7 @@ class UserResource extends Resource
         return [
             'index' => ListUsers::route('/'),
             'create' => CreateUser::route('/create'),
+            'view' => ViewUser::route('/{record}'),
             'edit' => EditUser::route('/{record}/edit'),
         ];
     }

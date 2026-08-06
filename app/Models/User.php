@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Facades\Filament;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -53,6 +54,66 @@ class User extends Authenticatable implements HasTenants
         ];
         return in_array($this->email, $superUsers, true);
     }
+
+    /**
+     * Role checks contextualized to a specific team (or the current active tenant).
+     */
+    public function isOwner(Team|int|null $team = null): bool
+    {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        $team = $team ?? \Filament\Facades\Filament::getTenant();
+        if (!$team) {
+            return false;
+        }
+
+        $teamId = $team instanceof Team ? $team->getKey() : $team;
+
+        // Checks if the user is explicitly set as the owner_id on the Team model
+        return \App\Models\Team::where('id', $teamId)
+            ->where('owner_id', $this->id)
+            ->exists();
+    }
+
+    public function isAdmin(Team|int|null $team = null): bool
+    {
+        return $this->hasTeamRole($team, TeamUser::ROLE_ADMIN);
+    }
+
+    public function isAccountant(Team|int|null $team = null): bool
+    {
+        return $this->hasTeamRole($team, TeamUser::ROLE_ACCOUNTANT);
+    }
+
+    public function isManager(Team|int|null $team = null): bool
+    {
+        return $this->hasTeamRole($team, TeamUser::ROLE_MANAGER);
+    }
+
+    public function isMember(Team|int|null $team = null): bool
+    {
+        return $this->hasTeamRole($team, TeamUser::ROLE_MEMBER);
+    }
+
+    /**
+     * Internal helper to verify specific pivot roles per workspace.
+     */
+    protected function hasTeamRole(Team|int|null $team, string $role): bool
+    {
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        $team = $team ?? \Filament\Facades\Filament::getTenant();
+        if (!$team) {
+            return false;
+        }
+
+        return $this->teamRole($team) === $role;
+    }
+
 
     public function teams(): BelongsToMany
     {

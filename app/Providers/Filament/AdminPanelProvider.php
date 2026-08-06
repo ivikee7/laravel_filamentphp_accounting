@@ -20,6 +20,8 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
+use Filament\Tables\Table;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -70,6 +72,8 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->passwordReset() // Password Reset
+            ->profile() // Profile
             ->tenant(Team::class)
             ->tenantRegistration(RegisterTeam::class)
             ->tenantProfile(EditTeamProfile::class)
@@ -89,6 +93,15 @@ class AdminPanelProvider extends PanelProvider
                         ->visible(fn() => auth()->user()?->isSuperUser()), // Checks if user is superuser,
                 ],
             ])
-            ->spa();
+            ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
+            ->spa()
+            ->maxContentWidth(Width::Full)
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->bootUsing(function () {
+                Table::configureUsing(function (Table $table): void {
+                    $table->paginated([5, 10, 25, 50])
+                        ->defaultPaginationPageOption(5);
+                });
+            });
     }
 }

@@ -44,6 +44,11 @@ class Team extends Model
         return $this->hasMany(TeamUser::class);
     }
 
+    public function user(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'team_users', 'team_id', 'user_id');
+    }
+
     public function accounts(): HasMany
     {
         return $this->hasMany(Account::class);
