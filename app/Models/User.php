@@ -50,9 +50,7 @@ class User extends Authenticatable implements HasTenants
     {
         $superUsers = [
             'ivikee7@gmail.com',
-            // Or pull dynamically from .env: explode(',', env('SUPER_ADMINS', ''))
         ];
-
         return in_array($this->email, $superUsers, true);
     }
 

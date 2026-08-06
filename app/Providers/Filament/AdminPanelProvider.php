@@ -8,6 +8,7 @@ use App\Filament\Pages\Reports\ProfitAndLossReport;
 use App\Filament\Pages\Reports\TrialBalanceReport;
 use App\Filament\Pages\Tenancy\EditTeamProfile;
 use App\Filament\Pages\Tenancy\RegisterTeam;
+use App\Filament\Pages\Tenancy\TeamMembers;
 use App\Filament\Pages\User\EditUser;
 use App\Models\Team;
 use Filament\Actions\Action;
@@ -74,16 +75,17 @@ class AdminPanelProvider extends PanelProvider
             ->tenantProfile(EditTeamProfile::class)
             ->tenantMenuItems([
                 [
-                    Action::make('edit-user')
-                        ->url(fn (): string => EditUser::getUrl())
-                        ->icon('heroicon-m-user-circle'),
+                    Action::make('Team Members')
+                        ->url(fn() => TeamMembers::getUrl())
+                        ->icon('heroicon-m-users')
+                        ->visible(fn() => auth()->user()?->isSuperUser()),
                 ],
                 [
                     Action::make('documentation')
                         ->url('https://filamentphp.com/docs/5.x')
                         ->openUrlInNewTab()
                         ->icon('heroicon-m-book-open')
-                        ->visible(fn () => auth()->user()?->isSuperUser()), // Checks if user is superuser,
+                        ->visible(fn() => auth()->user()?->isSuperUser()), // Checks if user is superuser,
                 ],
             ])
             ->spa();
