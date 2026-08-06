@@ -95,6 +95,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->readOnlyRelationManagersOnResourceViewPagesByDefault(false)
             ->spa()
+            ->favicon(asset('media/accounting_logo.png'))
             ->maxContentWidth(Width::Full)
             ->sidebarFullyCollapsibleOnDesktop()
             ->bootUsing(function () {
