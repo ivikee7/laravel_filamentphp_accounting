@@ -73,6 +73,7 @@ class AdminPanelProvider extends PanelProvider
             ->tenant(Team::class)
             ->tenantRegistration(RegisterTeam::class)
             ->tenantProfile(EditTeamProfile::class)
+            ->spa()
             ->tenantMenuItems([
                 [
                     Action::make('Team Members')
