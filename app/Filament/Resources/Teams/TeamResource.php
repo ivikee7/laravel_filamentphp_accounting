@@ -7,6 +7,7 @@ use App\Filament\Resources\Teams\Pages\EditTeam;
 use App\Filament\Resources\Teams\Pages\ListTeams;
 use App\Filament\Resources\Teams\Pages\ViewTeam;
 use App\Filament\Resources\Teams\RelationManagers\MembersRelationManager;
+use App\Filament\Resources\Teams\RelationManagers\OwnerRelationManager;
 use App\Filament\Resources\Teams\Schemas\TeamForm;
 use App\Filament\Resources\Teams\Schemas\TeamInfolist;
 use App\Filament\Resources\Teams\Tables\TeamsTable;
@@ -48,6 +49,7 @@ class TeamResource extends Resource
     {
         return [
             MembersRelationManager::class,
+            OwnerRelationManager::class,
         ];
     }
 
