@@ -21,6 +21,7 @@ class TaxProfile extends Model
     ];
 
     protected $casts = [
+        'tax_precision' => 'integer',
         'prices_include_tax' => 'bool',
     ];
 

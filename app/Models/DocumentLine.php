@@ -14,17 +14,22 @@ class DocumentLine extends Model
         'description',
         'quantity',
         'unit_price',
+        'price_includes_tax',
         'tax_rate',
         'tax_rate_id',
+        'tax_treatment',
         'tax_amount',
+        'tax_breakdown',
         'line_total',
     ];
 
     protected $casts = [
         'quantity' => 'decimal:4',
         'unit_price' => 'decimal:2',
+        'price_includes_tax' => 'boolean',
         'tax_rate' => 'decimal:4',
         'tax_amount' => 'decimal:2',
+        'tax_breakdown' => 'array',
         'line_total' => 'decimal:2',
     ];
 

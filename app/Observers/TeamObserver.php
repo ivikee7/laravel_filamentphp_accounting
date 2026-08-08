@@ -4,16 +4,15 @@ namespace App\Observers;
 
 use App\Models\Account;
 use App\Models\FiscalPeriod;
-use App\Models\Team;
 use App\Models\TaxProfile;
 use App\Models\TaxRate;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Team;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class TeamObserver
 {
-
     public function creating(Team $team): void
     {
         if (auth()->hasUser() && ! $team->owner_id) {
@@ -42,7 +41,9 @@ class TeamObserver
         $defaults = [
             ['code' => '1100', 'name' => 'Accounts Receivable', 'type' => 'asset', 'normal_balance' => 'debit'],
             ['code' => '1200', 'name' => 'Cash & Bank', 'type' => 'asset', 'normal_balance' => 'debit'],
+            ['code' => '1300', 'name' => 'Input Tax Recoverable', 'type' => 'asset', 'normal_balance' => 'debit'],
             ['code' => '2100', 'name' => 'Accounts Payable', 'type' => 'liability', 'normal_balance' => 'credit'],
+            ['code' => '2200', 'name' => 'Output Tax Payable', 'type' => 'liability', 'normal_balance' => 'credit'],
             ['code' => '3000', 'name' => 'Owner Equity', 'type' => 'equity', 'normal_balance' => 'credit'],
             ['code' => '4000', 'name' => 'Sales Revenue', 'type' => 'income', 'normal_balance' => 'credit'],
             ['code' => '5000', 'name' => 'Operating Expense', 'type' => 'expense', 'normal_balance' => 'debit'],
@@ -79,7 +80,12 @@ class TeamObserver
             ['team_id' => $team->getKey(), 'code' => 'STD', 'effective_from' => Carbon::create($year, 1, 1)->toDateString()],
             [
                 'name' => 'Standard',
+                'tax_type' => 'gst',
+                'applies_to_scope' => 'all',
+                'category' => 'standard',
+                'is_recoverable' => true,
                 'rate' => 0,
+                'components' => null,
                 'effective_to' => null,
                 'is_active' => true,
             ],

@@ -32,7 +32,7 @@ class DocumentAndPaymentFlowTest extends TestCase
             'role' => TeamUser::ROLE_OWNER,
         ]);
 
-        $this->assertSame(6, $team->accounts()->count());
+        $this->assertSame(8, $team->accounts()->count());
 
         $contact = Contact::create([
             'team_id' => $team->id,

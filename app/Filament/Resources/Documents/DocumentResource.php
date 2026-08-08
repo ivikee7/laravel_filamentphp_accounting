@@ -17,6 +17,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -46,6 +47,14 @@ class DocumentResource extends Resource
         return $schema->components([
             Section::make('Document')->schema([
                 Select::make('type')->required()->options(['invoice' => 'Invoice', 'bill' => 'Bill']),
+                Select::make('supply_scope')->required()->options([
+                    'all' => 'All / Not specified',
+                    'intra_state' => 'Intra-state',
+                    'inter_state' => 'Inter-state',
+                    'domestic' => 'Domestic',
+                    'import' => 'Import',
+                    'export' => 'Export',
+                ])->default('all'),
                 TextInput::make('number')->maxLength(50)->placeholder('Auto-generated if empty'),
                 Select::make('contact_id')->label('Contact')
                     ->options(function (): array {
@@ -62,7 +71,7 @@ class DocumentResource extends Resource
                     })
                     ->searchable(),
                 TextInput::make('currency_code')->default('USD')->required()->maxLength(3),
-            ])->columns(2),
+            ])->columns(3),
 
             Section::make('Dates')->schema([
                 DatePicker::make('issue_date')->required()->default(now()),
@@ -79,6 +88,24 @@ class DocumentResource extends Resource
                         TextInput::make('description')->required()->columnSpan(2),
                         TextInput::make('quantity')->numeric()->required()->minValue(0.0001)->default(1),
                         TextInput::make('unit_price')->numeric()->required()->minValue(0)->prefix('INR'),
+                        Toggle::make('price_includes_tax')
+                            ->label('Price Includes Tax')
+                            ->default(function (): bool {
+                                $tenant = Filament::getTenant();
+                                if (! $tenant instanceof Team) {
+                                    return false;
+                                }
+
+                                return (bool) $tenant->taxProfile?->prices_include_tax;
+                            }),
+                        Select::make('tax_treatment')
+                            ->required()
+                            ->options([
+                                'taxable' => 'Taxable',
+                                'zero_rated' => 'Zero-rated',
+                                'exempt' => 'Exempt',
+                            ])
+                            ->default('taxable'),
                         Select::make('tax_rate_id')
                             ->label('Tax Rate')
                             ->options(function (): array {
@@ -93,11 +120,18 @@ class DocumentResource extends Resource
                                     ->orderBy('name')
                                     ->get()
                                     ->mapWithKeys(fn (TaxRate $rate) => [
-                                        $rate->getKey() => $rate->name . ' (' . $rate->rate . '%)',
+                                        $rate->getKey() => strtoupper($rate->tax_type).' - '.$rate->name.' ('.$rate->rate.'%)',
                                     ])->all();
                             })
                             ->searchable(),
-//                        TextInput::make('tax_rate')->numeric()->minValue(0)->default(0)->suffix('%'),
+                        TextInput::make('tax_rate')
+                            ->label('Ad-hoc Tax Rate')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->suffix('%')
+                            ->default(0)
+                            ->helperText('Used when no tax rate is selected.'),
                     ])->columns(4)->columnSpanFull(),
             ])->columnSpanFull(),
         ]);

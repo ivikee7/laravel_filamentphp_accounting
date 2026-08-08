@@ -14,7 +14,12 @@ class TaxRate extends Model
         'team_id',
         'name',
         'code',
+        'tax_type',
+        'applies_to_scope',
+        'category',
+        'is_recoverable',
         'rate',
+        'components',
         'effective_from',
         'effective_to',
         'is_active',
@@ -23,7 +28,9 @@ class TaxRate extends Model
     protected $casts = [
         'effective_from' => 'date',
         'effective_to' => 'date',
+        'is_recoverable' => 'bool',
         'is_active' => 'bool',
+        'components' => 'array',
         'rate' => 'decimal:4',
     ];
 

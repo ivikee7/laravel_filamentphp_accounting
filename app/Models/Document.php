@@ -24,6 +24,7 @@ class Document extends Model
         'approved_by',
         'rejected_by',
         'currency_code',
+        'supply_scope',
         'subtotal_amount',
         'tax_amount',
         'tax_breakdown',

@@ -70,7 +70,7 @@ class PaymentResource extends Resource
                 ]),
                 TextInput::make('reference')->maxLength(100),
                 Textarea::make('notes')->rows(2)->columnSpanFull(),
-            ])->columns(2),
+            ])->columns(2)->columnSpanFull(),
         ]);
     }
 

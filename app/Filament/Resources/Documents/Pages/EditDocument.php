@@ -29,8 +29,8 @@ class EditDocument extends EditRecord
         $record = $this->getRecord();
         $data['lines'] = $record->lines()
             ->orderBy('line_no')
-            ->get(['description', 'quantity', 'unit_price', 'tax_rate', 'tax_rate_id'])
-            ->map(fn (DocumentLine $line) => $line->only(['description', 'quantity', 'unit_price', 'tax_rate', 'tax_rate_id']))
+            ->get(['description', 'quantity', 'unit_price', 'price_includes_tax', 'tax_rate', 'tax_rate_id', 'tax_treatment'])
+            ->map(fn (DocumentLine $line) => $line->only(['description', 'quantity', 'unit_price', 'price_includes_tax', 'tax_rate', 'tax_rate_id', 'tax_treatment']))
             ->all();
 
         return $data;
