@@ -77,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
             ->tenant(Team::class)
             ->tenantRegistration(RegisterTeam::class)
             ->tenantProfile(EditTeamProfile::class)
+            ->registration()
             ->spa()
             ->tenantMenuItems([
                 [

@@ -67,6 +67,7 @@ class DocumentResource extends Resource
             Section::make('Dates')->schema([
                 DatePicker::make('issue_date')->required()->default(now()),
                 DatePicker::make('due_date'),
+                Textarea::make('notes')->rows(3)->columnSpanFull(),
             ])->columns(2),
 
             Section::make('Lines')->schema([
@@ -77,7 +78,7 @@ class DocumentResource extends Resource
                     ->schema([
                         TextInput::make('description')->required()->columnSpan(2),
                         TextInput::make('quantity')->numeric()->required()->minValue(0.0001)->default(1),
-                        TextInput::make('unit_price')->numeric()->required()->minValue(0)->prefix('$'),
+                        TextInput::make('unit_price')->numeric()->required()->minValue(0)->prefix('INR'),
                         Select::make('tax_rate_id')
                             ->label('Tax Rate')
                             ->options(function (): array {
@@ -96,13 +97,9 @@ class DocumentResource extends Resource
                                     ])->all();
                             })
                             ->searchable(),
-                        TextInput::make('tax_rate')->numeric()->minValue(0)->default(0)->suffix('%'),
+//                        TextInput::make('tax_rate')->numeric()->minValue(0)->default(0)->suffix('%'),
                     ])->columns(4)->columnSpanFull(),
-            ]),
-
-            Section::make('Notes')->schema([
-                Textarea::make('notes')->rows(3)->columnSpanFull(),
-            ]),
+            ])->columnSpanFull(),
         ]);
     }
 

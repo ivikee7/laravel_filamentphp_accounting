@@ -43,7 +43,7 @@ class ContactResource extends Resource
                 TextInput::make('email')->email()->maxLength(120),
                 TextInput::make('phone')->maxLength(30),
                 TextInput::make('tax_id')->label('Tax ID')->maxLength(60),
-            ])->columns(2),
+            ])->columnSpanFull()->columns(2),
         ]);
     }
 
